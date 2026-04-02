@@ -202,6 +202,15 @@
             `;
         });
 
+        // FIX: Pastikan status catatan tersembunyi sesuai radio checked saat load
+        CONFIG.komponen.forEach(k => {
+            const id = k.toLowerCase().replace(" ", "");
+            const radioBaik = document.querySelector(`input[name="${id}"][value="Baik"]`);
+            if(radioBaik && radioBaik.checked) {
+                toggleNote(id, false);
+            }
+        });
+
         document.addEventListener('input', e => { 
             if (e.target.tagName === 'TEXTAREA') { 
                 e.target.style.height = 'auto'; 
@@ -212,8 +221,12 @@
 
     function toggleNote(id, show) { 
         const row = document.getElementById('row_note_' + id);
+        if (!row) return;
         row.style.setProperty('display', show ? (window.innerWidth <= 768 ? 'block' : 'table-row') : 'none', 'important');
-        if (!show) document.getElementById('note_' + id).value = ""; 
+        if (!show) {
+            const txt = document.getElementById('note_' + id);
+            if(txt) txt.value = ""; 
+        }
     }
 
     async function sendData() {
