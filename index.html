@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Audit Aset IT Premium - Bro System</title>
+    <title>Audit Aset IT Premium - Full Database</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
@@ -17,46 +17,25 @@
             --ind-danger: #ef4444;
         }
 
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            padding: 30px 10px;
-        }
-
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Inter', sans-serif; padding: 30px 10px; }
         .container-custom { max-width: 1100px; margin: 0 auto; }
-
-        .card-premium {
-            background: var(--card-bg);
-            border-radius: 28px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.05);
-            padding: 40px;
-        }
-
+        .card-premium { background: var(--card-bg); border-radius: 28px; box-shadow: 0 15px 50px rgba(0,0,0,0.05); padding: 40px; }
         .form-label { font-size: 0.8rem; letter-spacing: 1px; color: #64748b; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
+        .form-select, .form-control { border-radius: 14px; border: 1px solid #cbd5e1; background-color: var(--accent-bg); padding: 12px 18px; }
 
-        .form-select, .form-control {
-            border-radius: 14px;
-            border: 1px solid #cbd5e1;
-            background-color: var(--accent-bg);
-            padding: 12px 18px;
-        }
-
-        /* TABLE STYLING */
+        /* Table Styling */
         .table-container { border-radius: 18px; overflow: hidden; border: 1px solid #e2e8f0; background: #fff; }
         .table thead { background-color: #1e293b; color: white; }
         .table th { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; padding: 18px; border: none; }
         .table td { padding: 20px 18px; border-bottom: 1px solid #f1f5f9; }
-
         .form-check-input { width: 1.6em; height: 1.6em; cursor: pointer; border: 2px solid #cbd5e1; }
         .form-check-input:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
-
         .note-textarea { resize: none; overflow: hidden; min-height: 60px; border: 1px dashed #cbd5e1; background-color: #fffdec; border-radius: 12px; padding: 12px; width: 100% !important; display: block; }
 
+        /* Persen Box */
         .option-box { background: var(--accent-bg); border: 1px solid #cbd5e1; border-radius: 18px; padding: 20px; }
         .persen-wrapper { border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; padding: 5px 15px; width: 140px; }
         #persen { font-size: 1.1rem; font-weight: 800; border: none !important; background: transparent !important; text-align: right; width: 100%; box-shadow: none !important; }
-        
         .persen-success { color: var(--ind-success) !important; }
         .persen-warning { color: var(--ind-warning) !important; }
         .persen-danger { color: var(--ind-danger) !important; }
@@ -64,7 +43,6 @@
         .btn-premium { background: var(--primary-color); color: white; border: none; padding: 18px; border-radius: 16px; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; transition: 0.3s; }
         .btn-premium:hover { background: #1d4ed8; transform: translateY(-3px); }
 
-        /* RESPONSIVE MOBILE */
         @media (max-width: 768px) {
             .card-premium { padding: 25px 15px; }
             .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
@@ -88,12 +66,13 @@
         
         <div class="row g-3 mb-4">
             <div class="col-md-4">
-                <label class="form-label">Nama Pemakai</label>
-                <select id="nama" class="form-select"></select>
+                <label class="form-label">Cari Nama Penanggung Jawab</label>
+                <input list="listNama" id="nama" class="form-control" placeholder="Ketik nama..." oninput="autoFillJabatan()">
+                <datalist id="listNama"></datalist>
             </div>
             <div class="col-md-4">
-                <label class="form-label">JABATAN</label>
-                <select id="jabatan" class="form-select"></select>
+                <label class="form-label">JABATAN (Otomatis)</label>
+                <input type="text" id="jabatan" class="form-control" readonly placeholder="Jabatan akan muncul...">
             </div>
             <div class="col-md-4">
                 <label class="form-label">SPESIFIKASI UNIT</label>
@@ -156,99 +135,94 @@
 </div>
 
 <script>
+    // DATABASE FULL DARI SEMUA SCREENSHOT
+    const DB_USER = {
+        "BOWO PRAMONO": "Senior Manager", "AGUS SETIAWAN": "STKP", "ANGGA PRADIPTA": "MADM", "DENI NUGRAHA": "MEP", "ARMAN SUSANTO": "MHAR", "IRAWAN PARMAPUTRA": "MOP", "WILDANUL HAKIM": "MENG",
+        "ANDRA BAYU PS": "ASMAN KEUANGAN", "ANDY APRIANSYAH": "ASMAN UMUM", "ASEP TRESNA LH": "ASMAN SDM", "HANDARIANSAH": "ASMAN PBJ", "ADITYA MAHARDHIKA": "ASMAN RCBM", "FIRZA MULDANI": "ASMAN EKSIS", "IWAN HARDIKA": "ASMAN LCM, INVESTASI & MANAJEMEN RISIKO",
+        "ADI AHMAD W": "ASMAN PENYALURAN EPA", "ARIE NOVIYANTO": "ASMAN HAR INSTALASI EPA", "AR'RAHMANSYAH MUHAMAD": "ASMAN INVENTORY EPA", "DANDI SUKMARAHADI": "ASMAN HAR MESIN", "FAJAR SETIYONO": "ASMAN RENDALHAR", "HALIM": "ASMAN HAR KONTROL & INSTRUMEN", "SIGIT DWI PERMANA": "ASMAN HAR LISTRIK",
+        "ARIM SAKTI P": "ASMAN OPERASI REGU B", "HANDOYO": "ASMAN K3 & LINGKUNGAN", "LEO NARDY": "ASMAN OPERASI REGU D", "MU'RIDIN": "ASMAN KIMIA & BOP", "ABNUR ODIRI": "ASMAN OPERASI REGU C", "WAHYUDIN SIDIK": "ASMAN OPERASI REGU A", "RAHWINDHY MAZHAR CHASNANDA": "ASMAN RENDAL OPERASI",
+        "AGUNG PRASETYO": "SENIOR OFFICER ENG BOP", "ALAM TRI YUDHA": "SENIOR OFFICER ENG BOILER", "ANDIK HERMAWANTO": "SENIOR OFFICER ENG LISTRIK", "ARIS CAHYONO": "SENIOR OFFICER ENG LISTRIK", "DADANG SAHRONI": "SENIOR OFFICER PENGENDALIAN KONTRAK", "DIAZ ZAKARIA": "SENIOR OFFICER ENG TURBIN", "EDHY SANTOSO": "SENIOR OFFICER ENG KIMIA, K3 & LINGKUNGAN", "HERU HERMAWAN": "SENIOR OFFICER EPA", "HERY IRAWAN": "SENIOR OFFICER ENG KONTROL & INSTRUMEN",
+        "REMON YONASA HT": "SENIOR OFFICER ENG TURBIN", "RONANDA ADITYA PN": "SENIOR OFFICER ENG KONTROL & INSTRUMEN", "SATRIA RIZKI": "SENIOR OFFICER ENG BOILER", "SUDIRMAN BE": "SENIOR OFFICER ENG KIMIA, K3 & LINGKUNGAN", "SUDIRMAN BS": "SENIOR OFFICER ENG KIMIA, K3 & LINGKUNGAN", "ARI DWI CAHYONO": "OFFICER SKM", "MOHAMMAD BAGUS OKKY": "OFFICER BUDAYA DAN GCG", "TUMPAL SAMOSIR": "OFFICER AKUNTANSI", "RIO RINARWANDI": "TEAM LEADER GUDANG", "MUHAMMAD IQBAL FIRDAUS": "OFFICER PBJ", "IRFAN": "OFFICER ANGGARAN", "MUCHAMAD RIVALDI FK": "OFFICER SIPIL, SARANA & FASILITAS", "ROBERT DAVID CARNIAGO": "OFFICER CSR, HUMAS & KEAMANAN", "WASIS WICAKSONO": "OFFICER SDM", "FK YUDO WICAKSONO SAPUTRO": "OFFICER PBJ", "AGUS KURNIAWAN": "OFFICER ENG EFISIENSI", "AGUS TOMI": "TEAM LEADER HAR LISTRIK BOP", "MASEDONIUS ANDREW PRADANA": "OFFICER ENG EFISIENSI", "BOBBY PRAYOGO": "OFFICER LCM & INVESTASI", "HAKIM SATYADI": "OFFICER SKM & KINERJA", "MUHAMMAD SYUKRI HARDIANTO": "TEAM LEADER SIS",
+        "HENDRI ASRIANDI": "TEAM LEADER OPERASI PENYALURAN EPA REGU D", "PRIMA RADIANSYAH": "OFFICER MANAJEMEN RISIKO", "QOLIS FANDRA IRAWAN": "OFFICER PREDICTIVE MAINTENANCE", "RIZKY TRI SAPUTRO": "OFFICER PREDICTIVE MAINTENANCE", "TEGUH PURNAMA": "OFFICER RELIABILITY", "JOSEPH WILANTARA GULO": "OFFICER RELIABILITY", "BAMBANG KURNIAWAN": "TEAM LEADER HAR LKI EPA", "BAYU SAPTA NUGRAHA": "TEAM LEADER OPERASI PENYALURAN EPA REGU C", "NICO DWI KURNIADI": "OFFICER RENDAL EPA", "YAHYA ZULTHONI": "TEAM LEADER OPERASI PENYALURAN EPA REGU A", "ADITYA WIDAGDO PUTRA": "AHLI MUDA PERENCANAAN OUTAGE", "ARDI SURYADINATA": "TEAM LEADER HAR LISTRIK", "BAGUS VANY SETIAWAN": "TEAM LEADER HAR MESIN BOP & BENGKEL", "BOBBY LUMBAN TOBING": "TEAM LEADER HAR MEKANIK INSTALASI EPA", "MUHAMMAD NUR CHAMDANI": "TEAM LEADER RENDALHAR", "FAHRUDY UTOMO": "TEAM LEADER HAR MESIN BOILER", "FAJAR GUMILANG": "AHLI MUDA PERENCANAAN OUTAGE", "MUHAMMAD FARRAS ILHAM": "OFFICER RENDAL HAR INSTALASI EPA", "FERI SAPUTRA": "TEAM LEADER HAR KONTROL & INSTRUMEN BOP", "HERBERT PANONDANG SINAGA": "OFFICER RENVAL HAR", "RAHMAT FAJAR KURNIAWAN": "AHLI MUDA PERENCANAAN OUTAGE", "RAINHOLD TIGOR PARLINDUNGAN": "OFFICER RENVAL HAR", "RIDHO DWI SAPUTRO": "OFFICER INVENTORY", "RIYAN JAMARIF": "OFFICER RENVAL HAR", "MUHAMAD SHOBIRIN": "OFFICER RENVAL HAR", "TRI BUDIMAN JABARTI": "TEAM LEADER HAR MESIN TURBIN", "YOGI LISTIARGA": "TEAM LEADER HAR KONTROL & INSTRUMEN", "DUGARRY FIRMANSYAH HARIYANTO": "TEAM LEADER RENDAL EP", "AJI UNGGUL PRASETIA": "TEAM LEADER OPERASI UNIT 2 REGU A", "ADDY MUHAMMAD YASIR ROZIKUN": "TEAM LEADER OPERASI UNIT 3 REGU A", "DANANG HUTAMA": "TEAM LEADER BOP REGU C", "FADHOLI": "OFFICER RENVAL & KINERJA OPERASI", "FAJRI EKA MAULDY": "TEAM LEADER BOP REGU D", "GALIH TRI LAKSANA": "TEAM LEADER OPERASI UNIT 1 REGU A", "GANDA ISNUARDANA": "TEAM LEADER OPERASI UNIT 1 REGU C", "GARCIA VALDA UNSO": "JUNIOR OFFICER KIMIA", "GENTA IRIANA": "TEAM LEADER OPERASI PENYALURAN EPA REGU B", "HADI HANNAR WIRYATMO": "TEAM LEADER OPERASI UNIT 1 REGU B", "ILHAM KHRISNA NUGRAHA": "TEAM LEADER OPERASI UNIT 2 REGU B", "ISMU MUBAROK": "TEAM LEADER OPERASI UNIT 1 REGU D", "KUKUH SATRIYANTO": "OFFICER RENVAL & KINERJA OPERASI", "MENARA HUTAGAOL": "TEAM LEADER OPERASI UNIT 2 REGU C", "NANDA PUJI ARIANTO": "TEAM LEADER OPERASI UNIT 3 REGU D", "AHMAD NOPRAN ZULPIKAR": "TEAM LEADER OPERASI UNIT 3 REGU B", "KURNIAWAN SAKTI PRATAMA": "OFFICER KIMIA", "SARDI": "TEAM LEADER BOP REGU A", "MAULANA SIGIT WICAKSONO": "TEAM LEADER OPERASI UNIT 3 REGU C", "IDAM KHOLID": "TEAM LEADER BOP REGU B", "TAUFIK KURNIAWAN": "TEAM LEADER OPERASI UNIT 3 REGU A", "SYAFRUDIN": "OFFICER LINGKUNGAN", "RIAN RAMADHAN": "OFFICER K3L", "AJI SASONO BHAKTI": "OFFICER KEUANGAN PAJAK",
+        "AGUS SUHERMAN": "HELPER FASILITAS", "BAGAS": "HELPER FASILITAS", "JUNAEDI": "HELPER HUMAS", "ARRAHMAN": "PS SISTEM INFORMASI", "EJEN Z": "HELPER SIS", "DAYINTA ANDAYANI": "PEL KESEKRETARIATAN & FASILITAS", "DEDEN MAULANA": "PS KEPEGAWAIAN & DIKLAT", "DEDIN ADI HIDAYAT": "PEL PBJ", "DEVI RIVALDI": "PS ANGGARAN", "FAJAR": "HELPER AKUNTANSI", "HATTA": "HELPER AKUNTANSI", "HENDRIK AGUSTIAN": "PEL GUDANG", "KUSTINAH": "PEL GUDANG", "LELA NURLELA": "PEL KESEKRETARIATAN & FASILITAS", "NANCY PUTRI RAMADHANI": "PEL PBJ", "NITA SEPTIANI": "PEL PBJ", "NOVA": "HELPER SDM", "RESTI": "HELPER SDM", "MUHAMMAD RIAN": "PEL PBJ", "SAPTA RIZKA INTAN PRATA": "PS AKUNTANSI", "SELA TRI YASMI": "PEL KESEKRETARIATAN & FASILITAS", "SEPTI AGRIANI": "PEL LINGKUNGAN", "SOLEHAH JUMAILLAH": "PEL KEUANGAN & PAJAK", "VERANI NINDYA": "PEL KEPEGAWAIAN & DIKLAT", "WINDI YANTI": "PEL KESEKRETARIATAN & FASILITAS", "YOVI ALKAUSAR": "PS CSR, HUMAS & KEAMANAN", "AHMAD KURNIAWAN": "PS PREDICTIVE MAINTENANCE", "ATIN NINDIA HARYATI": "HELPER 1 ENG", "SITI WAHIDATUN CHASANAH": "PEL SKM", "PANDU WICAKSONO": "PS PREDICTIVE MAINTENANCE", "RD. RANGGA KUSUMA": "PS PREDICTIVE MAINTENANCE", "SAEFUL ANWAR": "PS PREDICTIVE MAINTENANCE", "YANUAR FARISYI": "PS PREDICTIVE MAINTENANCE", "ARI SETIAWAN": "PEL ADMINISTRASI EP", "TRIANTORO UTOMO": "PS ADMINISTRASI EP", "MUHAMMAD IN'AMUL WAFA": "PEL ADMINISTRASI EP",
+        "AHMAD YUSUF ALI": "TECHNICIAN HAR MESIN BOP", "ANGGI DWIYANTO": "TEKNISI SENIOR HAR INSTRUMEN", "DEPI SUTIARNA": "TEKNISI SENIOR HAR LISTRIK BOP", "DONI HERBIYANTO": "TECHNICIAN HAR MESIN BOP", "TS HM": "TECHNICIAN HAR MESIN TURBIN", "EKA FENDI P.": "TEKNISI SENIOR HAR INSTRUMEN", "FAHRUL HIDAYATULLAH": "TEKNISI SENIOR HAR INSTRUMEN", "NUR ARIFIN ILYAS": "TECHNICIAN HAR MESIN TURBIN", "IRFAN ADI PRASTIYA": "TECHNICIAN HAR MESIN BOILER", "PONCO ADI NUGROHO": "TEKNISI HAR LISTRIK UNIT", "M. RIZAL NUR JALALUDIN": "TEKNISI SENIOR HAR LISTRIK BOP", "SIGIT DWI PERMANA (TS HAR)": "TEKNISI SENIOR HAR LISTRIK IP", "KHAIRIAH HAFNI": "PEL LINGKUNGAN", "MUHAMAD RIZAL JAELANI": "PEL K3", "RUDI HARTONO": "PS K3", "MOCHAMAD ZAINAL ARIFIN": "PS K3"
+    };
+
     const CONFIG = {
-        nama: ["Abdul Bais Supriyadi", "Budi Setiawan", "Siti Aminah", "Raima Putri", "Andi Wijaya"],
-        jabatan: ["Helper Fasilitas", "IT Support", "Admin Gudang", "Manager Operasional"],
-        spek: ["Lenovo AIO 3 Core i5", "Lenovo Ideapad 5i", "Dell Optiplex 7070", "Macbook Air M1"],
+        spek: ["Lenovo AIO 3 Core i5", "Lenovo Ideapad 5i", "Dell Optiplex 7070", "Macbook Air M1", "Lenovo ThinkPad X1", "PC Rakitan IT"],
         komponen: ["Hardware", "System Operasi", "Software", "Fisik"]
     };
 
     window.onload = () => {
-        const fill = (id, list) => {
-            const el = document.getElementById(id);
-            el.add(new Option(`Pilih...`, ""));
-            list.forEach(v => el.add(new Option(v, v)));
-        };
-        fill("nama", CONFIG.nama); fill("jabatan", CONFIG.jabatan); fill("spek", CONFIG.spek);
-        
-        const pcts = []; for(let i=100; i>=10; i-=10) pcts.push(i);
-        const selectPersen = document.getElementById("persen");
-        selectPersen.add(new Option(`0%`, ""));
-        pcts.forEach(v => { selectPersen.add(new Option(v + "%", v)); });
-
-        selectPersen.addEventListener('change', function() {
-            const val = parseInt(this.value);
-            this.classList.remove('persen-success', 'persen-warning', 'persen-danger');
-            if (val >= 80) this.classList.add('persen-success');
-            else if (val >= 50) this.classList.add('persen-warning');
-            else if (val < 50) this.classList.add('persen-danger');
+        // Isi Datalist Nama
+        const listNama = document.getElementById("listNama");
+        Object.keys(DB_USER).sort().forEach(n => {
+            const opt = document.createElement("option");
+            opt.value = n;
+            listNama.appendChild(opt);
         });
 
+        // Isi Spek
+        const selSpek = document.getElementById("spek");
+        selSpek.add(new Option("Pilih Spek...", ""));
+        CONFIG.spek.forEach(s => selSpek.add(new Option(s, s)));
+
+        // Isi Persen
+        const selPersen = document.getElementById("persen");
+        selPersen.add(new Option("0%", ""));
+        for(let i=100; i>=10; i-=10) selPersen.add(new Option(i + "%", i));
+
+        selPersen.addEventListener('change', function() {
+            const val = parseInt(this.value);
+            this.className = "form-select " + (val >= 80 ? "persen-success" : val >= 50 ? "persen-warning" : val > 0 ? "persen-danger" : "");
+        });
+
+        // Generate Tabel
         const tbody = document.getElementById("mainTable");
         CONFIG.komponen.forEach(k => {
             const id = k.toLowerCase().replace(" ", "");
             tbody.innerHTML += `
                 <tr>
-                    <td>${k}</td>
+                    <td class="fw-bold text-dark fs-6">${k}</td>
                     <td data-label="BAIK" class="text-center"><input class="form-check-input" type="radio" name="${id}" value="Baik" onclick="toggleNote('${id}', false)" checked></td>
                     <td data-label="KURANG" class="text-center"><input class="form-check-input" type="radio" name="${id}" value="Kurang Baik" onclick="toggleNote('${id}', true)"></td>
                     <td data-label="RUSAK" class="text-center"><input class="form-check-input" type="radio" name="${id}" value="Rusak" onclick="toggleNote('${id}', true)"></td>
                 </tr>
                 <tr id="row_note_${id}" class="row-note-mobile" style="display:none;">
-                    <td colspan="4" style="padding: 10px 0;">
-                        <textarea id="note_${id}" class="note-textarea" placeholder="Detail masalah pada ${k}..."></textarea>
-                    </td>
+                    <td colspan="4" style="padding: 10px 0;"><textarea id="note_${id}" class="note-textarea" placeholder="Detail masalah pada ${k}..."></textarea></td>
                 </tr>
             `;
         });
-
-        // FIX: Pastikan status catatan tersembunyi sesuai radio checked saat load
-        CONFIG.komponen.forEach(k => {
-            const id = k.toLowerCase().replace(" ", "");
-            const radioBaik = document.querySelector(`input[name="${id}"][value="Baik"]`);
-            if(radioBaik && radioBaik.checked) {
-                toggleNote(id, false);
-            }
-        });
-
-        document.addEventListener('input', e => { 
-            if (e.target.tagName === 'TEXTAREA') { 
-                e.target.style.height = 'auto'; 
-                e.target.style.height = e.target.scrollHeight + 'px'; 
-            } 
-        });
     };
 
-    function toggleNote(id, show) { 
+    function autoFillJabatan() {
+        const nama = document.getElementById("nama").value.toUpperCase();
+        document.getElementById("jabatan").value = DB_USER[nama] || "";
+    }
+
+    function toggleNote(id, show) {
         const row = document.getElementById('row_note_' + id);
-        if (!row) return;
-        row.style.setProperty('display', show ? (window.innerWidth <= 768 ? 'block' : 'table-row') : 'none', 'important');
-        if (!show) {
-            const txt = document.getElementById('note_' + id);
-            if(txt) txt.value = ""; 
-        }
+        row.style.display = show ? (window.innerWidth <= 768 ? 'block' : 'table-row') : 'none';
+        if (!show) document.getElementById('note_' + id).value = "";
     }
 
     async function sendData() {
-        const nama = document.getElementById('nama').value;
+        const nama = document.getElementById('nama').value.toUpperCase();
         const jabatan = document.getElementById('jabatan').value;
         const spek = document.getElementById('spek').value;
         const persen = document.getElementById('persen').value;
         const isAgreed = document.getElementById('pernyataan').checked;
 
         if (!nama || !jabatan || !spek || !persen || !isAgreed) {
-            alert("⚠️ Identitas, Persentase, & Pernyataan WAJIB diisi!"); return;
+            alert("⚠️ Nama, Jabatan, Spek, & Pernyataan wajib diisi!"); return;
         }
 
         const btn = document.getElementById("btnSubmit");
-        btn.disabled = true;
-        btn.innerText = "SEDANG MENGIRIM...";
+        btn.disabled = true; btn.innerText = "MENGIRIM...";
 
         const payload = {
             timestamp: new Date().toLocaleString('id-ID'),
-            nama: nama,
-            jabatan: jabatan,
-            spek: spek,
+            nama: nama, jabatan: jabatan, spek: spek,
             kondisi: {
                 hardware: document.querySelector('input[name="hardware"]:checked').value,
                 os: document.querySelector('input[name="systemoperasi"]:checked').value,
@@ -269,20 +243,11 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxfO1OrF9OVmmeulH8VXkrSbvYRpxXlGCwQFn0AD7fq0KZqfTjOIQWXJwWoUVlopTrD/exec";
 
         try {
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(payload),
-                headers: { "Content-Type": "application/json" }
-            });
-            
-            alert("✅ BERHASIL! Data audit sudah masuk ke Google Sheets.");
-            location.reload(); 
-            
+            await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+            alert("✅ BERHASIL! Data mendarat di Sheets.");
+            location.reload();
         } catch (err) {
-            alert("❌ Gagal kirim! Cek koneksi internet lo.");
-            btn.disabled = false;
-            btn.innerText = "Simpan Laporan Sekarang ✅";
+            alert("❌ Gagal kirim!"); btn.disabled = false;
         }
     }
 </script>
